@@ -159,7 +159,8 @@ if [ "$VERSION" = "latest" ]; then
   fi
 fi
 
-asset="${BINARY}_${os}_${arch}.tar.gz"
+version_num="${VERSION#v}"   # GoReleaser drops the leading 'v' in archive names
+asset="${BINARY}_${version_num}_${os}_${arch}.tar.gz"
 base_url="https://github.com/$OWNER/$REPO/releases/download/$VERSION"
 archive_url="$base_url/$asset"
 checksums_url="$base_url/checksums.txt"
