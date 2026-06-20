@@ -1,0 +1,28 @@
+# Build output
+dmarc-tui
+*.exe
+
+# Go toolchain
+*.test
+*.out
+/vendor/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Demo tape (contains machine-specific absolute paths)
+docs/demo.tape
+
+# DMARC reports (may contain sensitive mail data)
+dmarc-reports/
+*.xml
+
+# ...except the synthetic sample report shipped for trying out the tool
+!sample-data/sample-report.xml

@@ -1,0 +1,323 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Synthetic DMARC aggregate report for trying out dmarc-tui.
+
+  Every domain, organization name, IP address, and report ID below is
+  fictional. Domains use the IANA-reserved documentation names
+  (example.com / example.net / example.org, RFC 2606) and addresses come
+  from the reserved documentation ranges (RFC 5737 / RFC 3849) — none of
+  it resolves to or describes any real sender, receiver, or organization.
+
+  The records are deliberately varied so the tool's full range shows up:
+  clean passes, alignment-only "needs review" cases (the classic
+  mailing-list/ESP pattern), outright failures with different
+  dispositions, an IPv6 source, multiple DKIM signatures on one message,
+  and an SPF <domain> populated with a bare IP (a real-world quirk some
+  report generators produce when there's no HELO/MAIL FROM domain).
+-->
+<feedback>
+  <report_metadata>
+    <org_name>Example Reporting Org</org_name>
+    <email>dmarc-reports@reporter.example</email>
+    <report_id>example-00000001.1780272000.1780358400</report_id>
+    <date_range>
+      <begin>1780272000</begin>
+      <end>1780358400</end>
+    </date_range>
+  </report_metadata>
+  <policy_published>
+    <domain>example.com</domain>
+    <adkim>r</adkim>
+    <aspf>r</aspf>
+    <p>quarantine</p>
+    <sp>quarantine</sp>
+    <pct>100</pct>
+  </policy_published>
+
+  <!-- Clean pass: both mechanisms authenticate and align. -->
+  <record>
+    <row>
+      <source_ip>203.0.113.10</source_ip>
+      <count>5400</count>
+      <policy_evaluated>
+        <disposition>none</disposition>
+        <dkim>pass</dkim>
+        <spf>pass</spf>
+      </policy_evaluated>
+    </row>
+    <identifiers>
+      <header_from>example.com</header_from>
+    </identifiers>
+    <auth_results>
+      <dkim>
+        <domain>example.com</domain>
+        <selector>selector1</selector>
+        <result>pass</result>
+      </dkim>
+      <spf>
+        <domain>example.com</domain>
+        <result>pass</result>
+      </spf>
+    </auth_results>
+  </record>
+
+  <!-- Clean pass via a second selector — same shape, different sender path. -->
+  <record>
+    <row>
+      <source_ip>198.51.100.23</source_ip>
+      <count>3210</count>
+      <policy_evaluated>
+        <disposition>none</disposition>
+        <dkim>pass</dkim>
+        <spf>pass</spf>
+      </policy_evaluated>
+    </row>
+    <identifiers>
+      <header_from>example.com</header_from>
+    </identifiers>
+    <auth_results>
+      <dkim>
+        <domain>example.com</domain>
+        <selector>selector2</selector>
+        <result>pass</result>
+      </dkim>
+      <spf>
+        <domain>example.com</domain>
+        <result>pass</result>
+      </spf>
+    </auth_results>
+  </record>
+
+  <!-- Relaxed alignment: signed/sent from a subdomain, still aligns to the
+       organizational domain (mail.example.com -> example.com). -->
+  <record>
+    <row>
+      <source_ip>192.0.2.55</source_ip>
+      <count>980</count>
+      <policy_evaluated>
+        <disposition>none</disposition>
+        <dkim>pass</dkim>
+        <spf>pass</spf>
+      </policy_evaluated>
+    </row>
+    <identifiers>
+      <header_from>example.com</header_from>
+    </identifiers>
+    <auth_results>
+      <dkim>
+        <domain>mail.example.com</domain>
+        <selector>mkt</selector>
+        <result>pass</result>
+      </dkim>
+      <spf>
+        <domain>mail.example.com</domain>
+        <result>pass</result>
+      </spf>
+    </auth_results>
+  </record>
+
+  <!-- Needs review: DKIM authenticates but for an unrelated (third-party
+       ESP) domain, so it can't align — classic mailing-list/ESP relay.
+       SPF authenticates and aligns, so DMARC still passes overall. -->
+  <record>
+    <row>
+      <source_ip>203.0.113.77</source_ip>
+      <count>540</count>
+      <policy_evaluated>
+        <disposition>none</disposition>
+        <dkim>fail</dkim>
+        <spf>pass</spf>
+      </policy_evaluated>
+    </row>
+    <identifiers>
+      <header_from>example.com</header_from>
+    </identifiers>
+    <auth_results>
+      <dkim>
+        <domain>newsletter.example.net</domain>
+        <selector>es1</selector>
+        <result>pass</result>
+      </dkim>
+      <spf>
+        <domain>example.com</domain>
+        <result>pass</result>
+      </spf>
+    </auth_results>
+  </record>
+
+  <!-- Needs review, the other way round: DKIM authenticates and aligns,
+       but SPF was checked against an unrelated bounce/return-path domain
+       and can't align — common with forwarded or relayed mail. -->
+  <record>
+    <row>
+      <source_ip>198.51.100.88</source_ip>
+      <count>410</count>
+      <policy_evaluated>
+        <disposition>none</disposition>
+        <dkim>pass</dkim>
+        <spf>fail</spf>
+      </policy_evaluated>
+    </row>
+    <identifiers>
+      <header_from>example.com</header_from>
+    </identifiers>
+    <auth_results>
+      <dkim>
+        <domain>example.com</domain>
+        <selector>bulk</selector>
+        <result>pass</result>
+      </dkim>
+      <spf>
+        <domain>bounce.example.org</domain>
+        <result>fail</result>
+      </spf>
+    </auth_results>
+  </record>
+
+  <!-- Outright fail: a broken/expired DKIM signature plus an SPF
+       softfail, neither aligns — quarantined by policy. -->
+  <record>
+    <row>
+      <source_ip>192.0.2.150</source_ip>
+      <count>260</count>
+      <policy_evaluated>
+        <disposition>quarantine</disposition>
+        <dkim>fail</dkim>
+        <spf>fail</spf>
+      </policy_evaluated>
+    </row>
+    <identifiers>
+      <header_from>example.com</header_from>
+    </identifiers>
+    <auth_results>
+      <dkim>
+        <domain>example.com</domain>
+        <selector>old</selector>
+        <result>fail</result>
+      </dkim>
+      <spf>
+        <domain>example.com</domain>
+        <result>softfail</result>
+      </spf>
+    </auth_results>
+  </record>
+
+  <!-- Fail with no DKIM signature at all, and an SPF check that the
+       sending system could only report against the connecting host's
+       bare IP (no HELO/MAIL FROM domain to record) — rejected by policy. -->
+  <record>
+    <row>
+      <source_ip>203.0.113.201</source_ip>
+      <count>130</count>
+      <policy_evaluated>
+        <disposition>reject</disposition>
+        <dkim>fail</dkim>
+        <spf>fail</spf>
+      </policy_evaluated>
+    </row>
+    <identifiers>
+      <header_from>example.com</header_from>
+    </identifiers>
+    <auth_results>
+      <dkim>
+        <domain></domain>
+        <result>none</result>
+      </dkim>
+      <spf>
+        <domain>192.0.2.201</domain>
+        <result>fail</result>
+      </spf>
+    </auth_results>
+  </record>
+
+  <!-- IPv6 source, clean pass — confirms IPv6 addresses sort and render
+       the same as IPv4 ones. -->
+  <record>
+    <row>
+      <source_ip>2001:db8::1</source_ip>
+      <count>75</count>
+      <policy_evaluated>
+        <disposition>none</disposition>
+        <dkim>pass</dkim>
+        <spf>pass</spf>
+      </policy_evaluated>
+    </row>
+    <identifiers>
+      <header_from>example.com</header_from>
+    </identifiers>
+    <auth_results>
+      <dkim>
+        <domain>example.com</domain>
+        <selector>selector1</selector>
+        <result>pass</result>
+      </dkim>
+      <spf>
+        <domain>example.com</domain>
+        <result>pass</result>
+      </spf>
+    </auth_results>
+  </record>
+
+  <!-- Likely spoofing attempt: nothing authenticates, nothing aligns,
+       From: claims example.com but every check points elsewhere. -->
+  <record>
+    <row>
+      <source_ip>198.51.100.5</source_ip>
+      <count>45</count>
+      <policy_evaluated>
+        <disposition>reject</disposition>
+        <dkim>fail</dkim>
+        <spf>fail</spf>
+      </policy_evaluated>
+    </row>
+    <identifiers>
+      <header_from>example.com</header_from>
+    </identifiers>
+    <auth_results>
+      <dkim>
+        <domain>spoofed-example.net</domain>
+        <selector>x</selector>
+        <result>fail</result>
+      </dkim>
+      <spf>
+        <domain>spoofed-example.net</domain>
+        <result>fail</result>
+      </spf>
+    </auth_results>
+  </record>
+
+  <!-- Multiple DKIM signatures on one message (forwarders and mailing
+       lists often add their own on top of the original): the first
+       authenticates and aligns, so DMARC passes on DKIM even though a
+       second, unrelated signature fails. -->
+  <record>
+    <row>
+      <source_ip>192.0.2.250</source_ip>
+      <count>12</count>
+      <policy_evaluated>
+        <disposition>none</disposition>
+        <dkim>pass</dkim>
+        <spf>pass</spf>
+      </policy_evaluated>
+    </row>
+    <identifiers>
+      <header_from>example.com</header_from>
+    </identifiers>
+    <auth_results>
+      <dkim>
+        <domain>example.com</domain>
+        <selector>selector1</selector>
+        <result>pass</result>
+      </dkim>
+      <dkim>
+        <domain>thirdparty.example.org</domain>
+        <selector>selector2</selector>
+        <result>fail</result>
+      </dkim>
+      <spf>
+        <domain>example.com</domain>
+        <result>pass</result>
+      </spf>
+    </auth_results>
+  </record>
+</feedback>

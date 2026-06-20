@@ -1,0 +1,63 @@
+version: 2
+
+project_name: dmarc-tui
+
+before:
+  hooks:
+    - go mod tidy
+
+builds:
+  - id: dmarc-tui
+    main: .
+    binary: dmarc-tui
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      - darwin
+      - windows
+    goarch:
+      - amd64
+      - arm64
+    ldflags:
+      - -s -w -X main.version={{ .Version }}
+
+archives:
+  - id: dmarc-tui
+    formats: [tar.gz]
+    # Matches what install.sh expects when it builds the asset name itself:
+    # lowercase GOOS/GOARCH (linux/darwin/windows, amd64/arm64).
+    name_template: >-
+      {{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}
+    format_overrides:
+      - goos: windows
+        formats: [zip]
+    files:
+      - README.md
+      - LICENSE
+      - sample-data/sample-report.xml
+
+checksum:
+  name_template: "checksums.txt"
+
+snapshot:
+  version_template: "{{ incpatch .Version }}-next"
+
+changelog:
+  sort: asc
+  filters:
+    exclude:
+      - "^docs:"
+      - "^test:"
+      - "^chore:"
+
+release:
+  github:
+    owner: ajxv
+    name: dmarc-tui
+  draft: false
+  prerelease: auto
+  # The workflow only fires once you've manually published a vX.Y.Z release
+  # on GitHub — keep the title/notes you wrote there as-is and just attach
+  # the cross-platform archives and checksums to it.
+  mode: keep-existing
