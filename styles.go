@@ -6,32 +6,32 @@ import (
 	"github.com/charmbracelet/lipgloss"
 )
 
-// ── Tokyo Night palette ───────────────────────────────────────────────────────
+// ── Dracula palette ───────────────────────────────────────────────────────────
 // Every hex literal in the project lives here.
 // No other file should contain a raw "#rrggbb" string — reference these vars.
 
 var (
 	// Backgrounds
-	colAppBg       = lipgloss.Color("#1a1b26") // app background (used everywhere)
-	colSelectionBg = lipgloss.Color("#1e2030") // selected-row highlight
-	colBadgeBg     = lipgloss.Color("#1e2335") // domain-via badge background
+	colAppBg       = lipgloss.Color("#282a36") // app background (Dracula bg, used everywhere)
+	colSelectionBg = lipgloss.Color("#44475a") // selected-row highlight (current line)
+	colBadgeBg     = lipgloss.Color("#21222c") // domain-via badge background (recessed)
 
 	// Named foreground palette
-	colBrand    = lipgloss.Color("#7c6af7") // brand purple (logo)
-	colRed      = lipgloss.Color("#f7768e")
-	colGreen    = lipgloss.Color("#9ece6a")
-	colYellow   = lipgloss.Color("#e0af68")
-	colAccent   = lipgloss.Color("#7aa2f7") // blue accent / active tab
-	colCyan     = lipgloss.Color("#7dcfff")
-	colFg       = lipgloss.Color("#c0caf5") // primary text
-	colMuted    = lipgloss.Color("#565f89")
-	colDimMuted = lipgloss.Color("#3b4261")
+	colBrand    = lipgloss.Color("#bd93f9") // brand purple (logo)
+	colRed      = lipgloss.Color("#ff5555") // red
+	colGreen    = lipgloss.Color("#50fa7b") // green
+	colYellow   = lipgloss.Color("#f1fa8c") // yellow
+	colAccent   = lipgloss.Color("#82aaff") // blue accent / active tab
+	colCyan     = lipgloss.Color("#8be9fd") // cyan
+	colFg       = lipgloss.Color("#f8f8f2") // primary text
+	colMuted    = lipgloss.Color("#6272a4") // muted / comment
+	colDimMuted = lipgloss.Color("#3a3c4e") // dim borders
 
 	// Evaluation-specific: brighter variants for the detail result table.
 	// Distinct from the softer badge palette to carry more weight on a plain
 	// background, making the pass/fail verdict read clearly at a glance.
-	colPassBright = lipgloss.Color("#4ade80")
-	colFailBright = lipgloss.Color("#f87171")
+	colPassBright = lipgloss.Color("#50fa7b") // bright green
+	colFailBright = lipgloss.Color("#ff5555") // bright red
 )
 
 // ── Column-layout constants ───────────────────────────────────────────────────

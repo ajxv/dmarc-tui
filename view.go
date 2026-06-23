@@ -72,11 +72,13 @@ func (d recordDelegate) Render(w io.Writer, m list.Model, index int, item list.I
 	if isSel {
 		cursor = styleAccentBold.Render("›") + " "
 	}
-	inner := padRight(cursor+row, d.tableInnerW-1)
+	// The cursor stays on the app background; only the row content carries the
+	// selection tint, so the "›" marker isn't boxed in a highlight.
+	inner := padRight(row, d.tableInnerW-1-2)
 	if isSel {
 		inner = lipgloss.NewStyle().Background(colSelectionBg).Render(inner)
 	}
-	fmt.Fprint(w, inner)
+	fmt.Fprint(w, cursor+inner)
 }
 
 // ── Top-level View ────────────────────────────────────────────────────────────

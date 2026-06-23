@@ -40,17 +40,18 @@ func (m model) renderHelpBody(W int) string {
 
 	innerW := max(W-6, 40)
 
-	// Section header: accent color, no underline.
+	// Section header: brand color, no underline — kept distinct from the blue
+	// key/label column so headings and entries don't read as the same thing.
 	section := func(title string) {
 		blank()
-		fill("  " + lipgloss.NewStyle().Foreground(colAccent).Bold(true).Render(title))
+		fill("  " + lipgloss.NewStyle().Foreground(colBrand).Bold(true).Render(title))
 		blank()
 	}
 
 	// Key row: fixed-width key column so descriptions align.
 	const keyColW = 18
 	keyRow := func(keys, desc string) {
-		fill("  " + padRight(styleWhiteBold.Render(keys), keyColW) + styleMuted.Render(desc))
+		fill("  " + padRight(styleAccentBold.Render(keys), keyColW) + styleWhite.Render(desc))
 	}
 
 	// Term: bold label + white body text. A blank line is added only when the
@@ -59,7 +60,7 @@ func (m model) renderHelpBody(W int) string {
 	term := func(label, body string) {
 		bodyW := max(innerW-termLabelW, 20)
 		row := lipgloss.JoinHorizontal(lipgloss.Top,
-			lipgloss.NewStyle().Width(termLabelW).Render(styleWhiteBold.Render(label)),
+			lipgloss.NewStyle().Width(termLabelW).Render(styleAccentBold.Render(label)),
 			styleWhite.Width(bodyW).Render(body),
 		)
 		lines := strings.Split(row, "\n")
